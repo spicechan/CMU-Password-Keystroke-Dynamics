@@ -30,7 +30,6 @@ public class UserInput {
 		startEndButton.setText("Start");
 		startEndButton.setEnabled(true);
 		textField = new JTextField(20);
-		textField.addKeyListener(keyListener);
 		// Disables focus traversal and the Tab events
 		// become available to the key event listener
 		textField.setFocusTraversalKeysEnabled(false);
@@ -61,20 +60,33 @@ public class UserInput {
 				startEndButton.setText("End");
 				main.storeUsername(textField.getText());
 				// Test code, uncomment to see test
-				System.out.println(textField.getText());
+				/*System.out.println(textField.getText());*/
 				textField.setText("");
+				textField.addKeyListener(keyListener);
 			}
 			else {
 				startEndButton.setText("Start");
-				session.setKeyStrokes(keyListener.getKeyPressList());
+				ArrayList<KeyPress> keyPressList = keyListener.getKeyPressList();
+				textField.removeKeyListener(keyListener);
+				/*for (KeyPress k1 : keyPressList) {
+					if (k1.getKeyup() == 0) {
+						for (KeyPress k2 : keyPressList) {
+							if (k1.getKeyIdentifier().getKeyCode() == k2.getKeyIdentifier().getKeyCode() && k2.getKeydown() == 0) {
+								keyPressList.remove(k2);
+								k1.setKeyup(k2.getKeyup());
+							}
+						}
+					}
+				}*/
+				session.setKeyStrokes(keyPressList);
 				main.storeSession(session);
-				System.out.println("Length of list: " + keyListener.getKeyPressList().size());
-				for (KeyPress k : keyListener.getKeyPressList()) {
+				// Test code, uncomment to see test
+				/*System.out.println("Length of list: " + keyPressList.size());
+				for (KeyPress k : keyPressList) {
 					System.out.print(k.getKeyIdentifier().getKeyChar());
 				}
-				System.out.println();
+				System.out.println();*/
 				textField.setText("");
-				keyListener.resetKeyPressList();
 			}
 		}
 

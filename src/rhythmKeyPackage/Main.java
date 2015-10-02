@@ -14,7 +14,7 @@ public class Main {
 	}
 	
 	public void storeSession(Session session) {
-		//pds.storeData(session);
+		pds.storeData(session);
 	}
 	
 	public static void main(String[] args) {
