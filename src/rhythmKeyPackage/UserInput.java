@@ -1,6 +1,7 @@
 package rhythmKeyPackage;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 
@@ -29,10 +30,16 @@ public class UserInput {
 		startEndButton.setText("Start");
 		startEndButton.setEnabled(true);
 		textField = new JTextField(20);
-		instructionsLabel = new JLabel("Instructions:\n"
-				+ "First enter your username and click start.\n"
-				+ "Then type your password and click end.\n"
-				+ "You can do this as many times as you want.");
+		textField.addKeyListener(keyListener);
+		// Disables focus traversal and the Tab events
+		// become available to the key event listener
+		textField.setFocusTraversalKeysEnabled(false);
+		textField.setFocusable(true);
+		
+		instructionsLabel = new JLabel("<HTML>Instructions:<br>"
+				+ "First enter your username and click start.<br>"
+				+ "Then type your password and click end.<br>"
+				+ "You can do this as many times as you want.</HTML>");
 		
 		// frame setup
 		frame = new JFrame("Keystroke Dynamics Typing Terminal");
@@ -48,16 +55,26 @@ public class UserInput {
 	}
 	
 	private class StartEndAction implements Action {
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (startEndButton.getText().equals("Start")) {
 				startEndButton.setText("End");
 				main.storeUsername(textField.getText());
+				// Test code, uncomment to see test
+				System.out.println(textField.getText());
 				textField.setText("");
 			}
 			else {
 				startEndButton.setText("Start");
 				session.setKeyStrokes(keyListener.getKeyPressList());
 				main.storeSession(session);
+				System.out.println("Length of list: " + keyListener.getKeyPressList().size());
+				for (KeyPress k : keyListener.getKeyPressList()) {
+					System.out.print(k.getKeyIdentifier().getKeyChar());
+				}
+				System.out.println();
+				textField.setText("");
+				keyListener.resetKeyPressList();
 			}
 		}
 

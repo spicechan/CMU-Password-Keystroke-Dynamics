@@ -11,17 +11,16 @@ public class KeyPress {
 	/* When key is pressed measured in
 	 * time in milliseconds since program began.
 	 */
-	private double keydown;
+	private long keydown;
 	/* When key is released measured in
 	 * time in milliseconds since program began.
 	 */
-	private double keyup;
+	private long keyup;
 	
 	public KeyPress() {	
 	}
 	
 	public KeyPress(KeyEvent keyIdentifier, long keydown, long keyup) {
-		super();
 		this.keyIdentifier = keyIdentifier;
 		this.keydown = keydown;
 		this.keyup = keyup;
@@ -35,7 +34,7 @@ public class KeyPress {
 		this.keyIdentifier = keyIdentifier;
 	}
 	
-	public double getKeydown() {
+	public long getKeydown() {
 		return keydown;
 	}
 	
@@ -43,7 +42,7 @@ public class KeyPress {
 		this.keydown = keydown;
 	}
 	
-	public double getKeyup() {
+	public long getKeyup() {
 		return keyup;
 	}
 	
