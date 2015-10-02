@@ -2,16 +2,19 @@ package rhythmKeyPackage;
 
 public class Main {
 
+	private PersistentDataStorage pds;
+	
 	public void startSession(){
-		String userName = getUserName();
-		PersistentDataStorage pds = new PersistentDataStorage(userName);
-		UserInput ui = new UserInput(pds);
-		Session session = ui.getSession();
-		pds.storeData(session);
+		UserInput ui = new UserInput(this);
+		ui.start();
 	}
 	
-	private String getUserName(){
-		return "";//Mau, make this method
+	public void storeUsername(String username) {
+		pds = new PersistentDataStorage(username);
+	}
+	
+	public void storeSession(Session session) {
+		pds.storeData(session);
 	}
 	
 	public static void main(String[] args) {

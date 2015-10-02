@@ -5,15 +5,13 @@ import java.util.ArrayList;
 
 public class Session {
 	
-	int sessionId;
-	List<KeyPress> keyStrokes = new ArrayList<KeyPress>();
-
-	public int getSessionId() {
-		return sessionId;
+	private List<KeyPress> keyStrokes = new ArrayList<KeyPress>();
+	
+	public Session() {
 	}
-
-	public void setSessionId(int sessionId) {
-		this.sessionId = sessionId;
+	
+	public Session(List<KeyPress> keyStrokes) {
+		this.keyStrokes = keyStrokes;
 	}
 
 	public List<KeyPress> getKeyStrokes() {
@@ -21,12 +19,6 @@ public class Session {
 	}
 
 	public void setKeyStrokes(List<KeyPress> keyStrokes) {
-		this.keyStrokes = keyStrokes;
-	}
-
-	public Session(int sessionId, List<KeyPress> keyStrokes) {
-		super();
-		this.sessionId = sessionId;
 		this.keyStrokes = keyStrokes;
 	}
 	
