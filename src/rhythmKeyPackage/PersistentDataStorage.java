@@ -1,6 +1,7 @@
 package rhythmKeyPackage;
 
 import java.util.List;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -12,11 +13,14 @@ public class PersistentDataStorage {
 
 	public PersistentDataStorage(String userName){
 		this.path = userName + ".txt";
+		this.userName = userName;
 	}
 	
 	String path;
+	String userName;
 	
 	public int getSessionId(){
+		
 		FileReader fileReader = null;
 		try {
 			fileReader = new FileReader(path);
@@ -33,7 +37,7 @@ public class PersistentDataStorage {
 			while ((newLine = reader.readLine()) != null){
 				i++;
 				line = newLine;
-				System.out.print(line);
+				//System.out.print(line);
 			}
 		} catch (IOException e) {
 			return -1;
@@ -46,7 +50,7 @@ public class PersistentDataStorage {
 		if(line == null){
 			return -1;
 		}
-		return Integer.parseInt(line);
+		return 1;
 	}
 	
 	public void storeData(Session s){
@@ -60,28 +64,57 @@ public class PersistentDataStorage {
 		}
 		PrintWriter printer = new PrintWriter(write);
 		
-		//Now write data to the file
 		String txt = "";
+		
+		//Now write data to the file
 		int id = getSessionId() + 1;
-		txt += Integer.toString(id);
-		printer.printf("%d", id);
-		printer.println();
+		
+		//Print the header if first time
+		if (id == 0){
+			printer.print("@relation ");
+			printer.print(userName);
+			printer.println(".accepted.passwords.keystroke.rhythm");
+
+			List<KeyPress> keyStrokes = s.getKeyStrokes();
+		
+			//Add the parameters
+			for(int i = 0; i < keyStrokes.size(); i++){
+				txt = "@attribute keyPressed";
+				txt += Integer.toString(i + id);
+				txt += " string";
+				printer.println(txt);
+				txt = "@attribute keyDown";
+				txt += Integer.toString(i + id);
+				txt += " string";
+				printer.println(txt);
+				txt = "@attribute keyUp";
+				txt += Integer.toString(i + id);
+				txt += " string";
+				printer.println(txt);
+			}
+		
+			printer.println("@attribute class {accepted,denied}");
+			printer.println("");
+			printer.println("@data");
+		}
+		
+		//now write data
 		List<KeyPress> keyStrokes = s.getKeyStrokes();
 		for(int i = 0; i < keyStrokes.size(); i++){
 			txt = "";
 			KeyPress k = keyStrokes.get(i);
-			txt += "(";
-			txt += k.getKeyIdentifier();
+			KeyEvent ke = k.getKeyIdentifier();
+			txt += ke.getKeyChar();
 			txt += ",";
 			txt += Double.toString(k.getKeydown());
 			txt += ",";
 			txt += Double.toString(k.getKeyup());
-			txt += ")";
+			txt += ",";
 			printer.print(txt);
-			printer.println();
 		}
-		printer.printf("%d", id);
-		printer.println();
+		txt = "accepted";
+		printer.println(txt);
+		//printer.printf("%d", id);
 		
 		printer.close();
 	}
