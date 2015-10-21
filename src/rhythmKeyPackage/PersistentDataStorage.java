@@ -82,15 +82,15 @@ public class PersistentDataStorage {
 			for(int i = 0; i < keyStrokes.size(); i++){
 				txt = "@attribute keyPressed";
 				txt += Integer.toString(i + id);
-				txt += " string";
+				txt += " numeric";
 				printer.println(txt);
 				txt = "@attribute flightTime";
 				txt += Integer.toString(i + id);
-				txt += " string";
+				txt += " numeric";
 				printer.println(txt);
 				txt = "@attribute dwellTime";
 				txt += Integer.toString(i + id);
-				txt += " string";
+				txt += " numeric";
 				printer.println(txt);
 			}
 
