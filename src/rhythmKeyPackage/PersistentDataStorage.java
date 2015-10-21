@@ -1,13 +1,14 @@
 package rhythmKeyPackage;
 
-import java.util.List;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Random;
 
 public class PersistentDataStorage {
 
@@ -120,7 +121,11 @@ public class PersistentDataStorage {
 		printer.println(txt);
 		//printer.printf("%d", id);
 
-		//createDeniedData(printer, s);
+
+		/* Some condition on when to Create the denied data?????
+		if(){
+			createDeniedData(printer, s);
+		}*/
 
 		printer.close();
 	}
@@ -130,15 +135,13 @@ public class PersistentDataStorage {
 		int amountOfSessions = 50; // Just a random maximum of sessions per user
 		int FlightOrDwell = 2;
 
-
-		String[] keyPressed = new String[amountOfKeyPresses];
+		String[] keysPressed = new String[amountOfKeyPresses];
 		double[][][] flightAndDwellData = new double[amountOfKeyPresses][amountOfSessions][FlightOrDwell];
 
-		int numberOfSessions = fillArraysWithDataInFile(keyPressed, flightAndDwellData);
+		int numberOfSessions = fillArraysWithDataInFile(keysPressed, flightAndDwellData);
 
 		final int FLIGHT = 0;
 		final int DWELL = 1;
-
 
 		//mean
 		double[][] meanFlightAndDwellData = new double[amountOfKeyPresses][FlightOrDwell];
@@ -155,11 +158,8 @@ public class PersistentDataStorage {
 			meanFlightAndDwellData[keypressed][DWELL]= sumDwell/numberOfSessions;
 		}
 
-
 		//std var
 		double[][] standVariationFlightAndDwellData = new double[amountOfKeyPresses][FlightOrDwell];
-
-
 
 		for (int keypressed = 0; keypressed < flightAndDwellData.length; keypressed++) {
 
@@ -178,13 +178,60 @@ public class PersistentDataStorage {
 				tempDwell += valueToMultiplyDwell*valueToMultiplyDwell;
 
 			}
-			standVariationFlightAndDwellData[keypressed][FLIGHT]= Math.sqrt(tempFlight/numberOfSessions);
-			standVariationFlightAndDwellData[keypressed][DWELL]= Math.sqrt(tempDwell/numberOfSessions);
+			standVariationFlightAndDwellData[keypressed][FLIGHT]= Math.sqrt(tempFlight/numberOfSessions-1);
+			standVariationFlightAndDwellData[keypressed][DWELL]= Math.sqrt(tempDwell/numberOfSessions-1);
 		}
+
+		//Write the denied data in the file (variations of the originals)
+		Random rand = new Random();
+
+		for (int i = 0; i < numberOfSessions; i++) {
+			String txt = "";
+			for (int keypressed = 0; keypressed < keysPressed.length; keypressed++) {
+
+				int aboveOrBelowMean = rand.nextBoolean()? 1 : -1; //1 for creating denied data above the std deviation, -1 for creating denied data below the std deviation
+				//I'm adding a 1 here below because I think to be denied it should be at least 100% over the std dev. nextRand returns something between 0 and 1. So this will always be between 100% and 200% over the std dev.
+				float percentageOfIncreaseOfDeniedData = 1 + rand.nextFloat(); // percentage above the std deviation. 0.3 means 30%, 1 means 100% more and so on. So if mean is 10, and std dev is 2, then it would introduce a 14 (mean (10) + std dev (2) + 100% increase (2) )
+
+				txt += keysPressed[keypressed];
+				txt += ",";
+				txt += meanFlightAndDwellData[keypressed][FLIGHT] + (aboveOrBelowMean * (standVariationFlightAndDwellData[keypressed][FLIGHT] + (percentageOfIncreaseOfDeniedData * standVariationFlightAndDwellData[keypressed][FLIGHT])));
+				txt += ",";
+				txt += meanFlightAndDwellData[keypressed][DWELL] + (aboveOrBelowMean * (standVariationFlightAndDwellData[keypressed][DWELL] + (percentageOfIncreaseOfDeniedData * standVariationFlightAndDwellData[keypressed][DWELL])));
+				txt += ",";
+				printer.print(txt);
+			}
+			txt = "denied";
+			printer.println(txt);
+		}
+
+		//Write the denied data in the file (completely different)
+		for (int i = 0; i < numberOfSessions*2; i++) {
+			String txt = "";
+			//random password between 0 and 15 characters long
+			for (int keypressed = 0; keypressed < rand.nextInt(15); keypressed++) {
+
+				int aboveOrBelowMean = rand.nextBoolean()? 1 : -1; //1 for creating denied data above the std deviation, -1 for creating denied data below the std deviation
+
+				final String alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&*";
+				final int length = alphabet.length();
+
+				txt += alphabet.charAt(rand.nextInt(length));
+				txt += ",";
+				txt += meanFlightAndDwellData[0][FLIGHT] + (aboveOrBelowMean * (standVariationFlightAndDwellData[0][FLIGHT] ));
+				txt += ",";
+				txt += meanFlightAndDwellData[0][DWELL] + (aboveOrBelowMean * (standVariationFlightAndDwellData[0][DWELL]));
+				txt += ",";
+				printer.print(txt);
+			}
+			txt = "denied";
+			printer.println(txt);
+		}
+
 	}
 
 
-	private int fillArraysWithDataInFile(String[] keyPressed, double[][][] flightAndDwellData){
+	private int fillArraysWithDataInFile(String[] keysPressed, double[][][] flightAndDwellData){
 		BufferedReader br = null;
 		boolean startGatheringData = false;
 
@@ -193,11 +240,8 @@ public class PersistentDataStorage {
 
 		int sessionIterator = 0;
 
-
 		try {
-
 			String sCurrentLine;
-
 			br = new BufferedReader(new FileReader(this.userName + ".arff"));
 
 			while ((sCurrentLine = br.readLine()) != null) {
@@ -209,7 +253,7 @@ public class PersistentDataStorage {
 				if(startGatheringData){
 					String[] elementsSeparatedByCommas = sCurrentLine.split(",");
 					for (int i = 0; i < elementsSeparatedByCommas.length; i+=3) {
-						keyPressed[i/3] = elementsSeparatedByCommas[i];
+						keysPressed[i/3] = elementsSeparatedByCommas[i];
 						flightAndDwellData[i/3][sessionIterator][FLIGHT] = Double.parseDouble(elementsSeparatedByCommas[i+1]);
 						flightAndDwellData[i/3][sessionIterator][DWELL] = Double.parseDouble(elementsSeparatedByCommas[i+2]);
 					}
@@ -228,7 +272,6 @@ public class PersistentDataStorage {
 		}
 
 		return sessionIterator;
-
 	}
 
 	public int getCurrentSessionId(){
