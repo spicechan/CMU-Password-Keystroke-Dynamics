@@ -83,11 +83,11 @@ public class PersistentDataStorage {
 				txt += Integer.toString(i + id);
 				txt += " string";
 				printer.println(txt);
-				txt = "@attribute keyDown";
+				txt = "@attribute flightTime";
 				txt += Integer.toString(i + id);
 				txt += " string";
 				printer.println(txt);
-				txt = "@attribute keyUp";
+				txt = "@attribute dwellTime";
 				txt += Integer.toString(i + id);
 				txt += " string";
 				printer.println(txt);
@@ -102,13 +102,17 @@ public class PersistentDataStorage {
 		List<KeyPress> keyStrokes = s.getKeyStrokes();
 		for(int i = 0; i < keyStrokes.size(); i++){
 			txt = "";
-			KeyPress k = keyStrokes.get(i);
-			KeyEvent ke = k.getKeyIdentifier();
-			txt += ke.getKeyChar();
+			KeyPress k1 = keyStrokes.get(i);
+			KeyEvent ke1 = k1.getKeyIdentifier();
+			txt += ke1.getKeyChar();
 			txt += ",";
-			txt += Double.toString(k.getKeydown());
+			if (i + 1 < keyStrokes.size()){
+				KeyPress k2 = keyStrokes.get(i+1);
+				txt += Double.toString(k2.getKeydown() - k1.getKeyup());
+			}
+			else txt += "0.0";
 			txt += ",";
-			txt += Double.toString(k.getKeyup());
+			txt += Double.toString(k1.getKeyup() - k1.getKeydown());	
 			txt += ",";
 			printer.print(txt);
 		}
