@@ -19,7 +19,7 @@ public class PersistentDataStorage {
 
 	String path;
 	String userName;
-	int buildTheDeniedCasesWhenItReachesThisAmountOfSessions = 20;
+	int buildTheDeniedCasesWhenItReachesThisAmountOfSessions = 50;
 
 	public int getSessionId(){
 
@@ -147,7 +147,7 @@ public class PersistentDataStorage {
 		txt = "accepted";
 		printer.print(txt);
 
-		/// When the user gets to 20 sessions it builds the denied cases
+		/// When the user gets to X sessions it builds the denied cases
 		if(getNumberOfSessionsSoFar() <= buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
 			//createDeniedData(printer, s);
 		}
