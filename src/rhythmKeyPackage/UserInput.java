@@ -62,10 +62,10 @@ public class UserInput {
 				// Test code, uncomment to see test
 				/*System.out.println(textField.getText());*/
 				textField.setText("");
-				textField.addKeyListener(keyListener);
+				
 			}
 			else {
-				startEndButton.setText("Start");
+				//startEndButton.setText("Start");
 				ArrayList<KeyPress> keyPressList = keyListener.getKeyPressList();
 				textField.removeKeyListener(keyListener);
 				/*for (KeyPress k1 : keyPressList) {
@@ -87,6 +87,7 @@ public class UserInput {
 				}
 				System.out.println();*/
 				textField.setText("");
+				textField.addKeyListener(keyListener);
 			}
 		}
 

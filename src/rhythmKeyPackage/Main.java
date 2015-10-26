@@ -3,6 +3,7 @@ package rhythmKeyPackage;
 public class Main {
 
 	private PersistentDataStorage pds;
+	private String username;
 	
 	public void startSession(){
 		UserInput ui = new UserInput(this);
@@ -10,11 +11,12 @@ public class Main {
 	}
 	
 	public void storeUsername(String username) {
-		pds = new PersistentDataStorage(username);
+		this.username = username;
 	}
 	
 	public void storeSession(Session session) {
-		pds.storeData(session);
+		this.pds = new PersistentDataStorage(username);
+		this.pds.storeData(session);
 	}
 	
 	public static void main(String[] args) {
