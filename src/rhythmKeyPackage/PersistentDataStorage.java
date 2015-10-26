@@ -34,10 +34,8 @@ public class PersistentDataStorage {
 		BufferedReader reader = new BufferedReader(fileReader);
 
 		String line = null, newLine;
-		int i = 0;
 		try {
 			while ((newLine = reader.readLine()) != null){
-				i++;
 				line = newLine;
 				//System.out.print(line);
 			}
@@ -70,6 +68,10 @@ public class PersistentDataStorage {
 
 		//Now write data to the file
 		int id = getSessionId() + 1;
+		
+		final int shiftCode = 16;
+		final int capsCode = 20; 
+		final int backspaceCode = 8;
 
 		//Print the header if first time
 		if (id == 0){
@@ -81,19 +83,30 @@ public class PersistentDataStorage {
 
 			//Add the parameters
 			for(int i = 0; i < keyStrokes.size(); i++){
-				txt = "@attribute keyPressed";
-				txt += Integer.toString(i + id);
-				txt += " string";
-				printer.println(txt);
-				txt = "@attribute flightTime";
-				txt += Integer.toString(i + id);
-				txt += " numeric";
-				printer.println(txt);
-				txt = "@attribute dwellTime";
-				txt += Integer.toString(i + id);
-				txt += " numeric";
-				printer.println(txt);
+				KeyPress k1 = keyStrokes.get(i);
+				KeyEvent ke1 = k1.getKeyIdentifier();
+				int keyCode = ke1.getKeyCode();
+				if ((keyCode != shiftCode) && (keyCode != capsCode) && (keyCode != backspaceCode)){
+					txt = "@attribute keyPressed";
+					txt += Integer.toString(i + id);
+					txt += " numeric";
+					printer.println(txt);
+					txt = "@attribute flightTime";
+					txt += Integer.toString(i + id);
+					txt += " numeric";
+					printer.println(txt);
+					txt = "@attribute dwellTime";
+					txt += Integer.toString(i + id);
+					txt += " numeric";
+					printer.println(txt);
+				}
 			}
+			txt = "@attribute capsPresses numeric";
+			printer.println(txt);
+			txt = "@attribute shiftPresses numeric";
+			printer.println(txt);
+			txt = "@attribute backspacePresses numeric";
+			printer.println(txt);
 
 			printer.println("@attribute class {accepted,denied}");
 			printer.println("");
@@ -105,11 +118,13 @@ public class PersistentDataStorage {
 		//now write data
 		List<KeyPress> keyStrokes = s.getKeyStrokes();
 		printer.println();
+		int capsPresses = 0, shiftPresses = 0, backspacePresses = 0;
 		for(int i = 0; i < keyStrokes.size(); i++){
 			txt = "";
 			KeyPress k1 = keyStrokes.get(i);
 			KeyEvent ke1 = k1.getKeyIdentifier();
-			txt += ke1.getKeyChar();
+			int keyCode = ke1.getKeyCode();
+			txt += keyCode;
 			txt += ",";
 			if (i + 1 < keyStrokes.size()){
 				KeyPress k2 = keyStrokes.get(i+1);
@@ -119,16 +134,22 @@ public class PersistentDataStorage {
 			txt += ",";
 			txt += (int)(k1.getKeyup() - k1.getKeydown());	
 			txt += ",";
-			printer.print(txt);
+			if (keyCode == capsCode) capsPresses++;
+			else if (keyCode == shiftCode) shiftPresses++;
+			else if (keyCode == backspaceCode) backspacePresses++;
+			else printer.print(txt);
 		}
+		
+		printer.print(capsPresses + ",");
+		printer.print(shiftPresses  + ",");
+		printer.print(backspacePresses + ",");
+
 		txt = "accepted";
 		printer.print(txt);
-		//printer.printf("%d", id);
-
 
 		/// When the user gets to 20 sessions it builds the denied cases
 		if(getNumberOfSessionsSoFar() <= buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
-			createDeniedData(printer, s);
+			//createDeniedData(printer, s);
 		}
 		
 
