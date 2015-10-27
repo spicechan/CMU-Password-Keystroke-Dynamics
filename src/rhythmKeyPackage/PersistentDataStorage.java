@@ -198,8 +198,9 @@ public class PersistentDataStorage {
 		
 		for (int i = 0; i < specialKeys.length; i++) {
 			int numSpecialKeys = 0;
+			int meanSpecialKeys[] = new int[5];
 			for (int sessionNumber = 0; sessionNumber < numberOfSessions; sessionNumber++) {
-				numSpecialKeys += specialKeys[sessionNumber][];
+				numSpecialKeys += specialKeys[sessionNumber][i];
 			}
 			meanSpecialKeys[i]= numSpecialKeys/numberOfSessions;
 		}
@@ -214,7 +215,7 @@ public class PersistentDataStorage {
 			double tempFlight = 0;
 			double meanDwell = meanFlightAndDwellData[keypressed][DWELL];
 			double tempDwell = 0;
-			int meanSpecialKeys[]
+			
 
 			for (int sessionNumber = 0; sessionNumber < numberOfSessions; sessionNumber++) {
 
@@ -258,7 +259,7 @@ public class PersistentDataStorage {
 			//Variations of the special keys just adds 1, or substracts 1. And if that is less than 0, then it assigns 0.
 			for (int j = 0; j < specialKeys.length; j++) {
 				int oneMoreOrOneLess = rand.nextBoolean()? 1 : -1;
-				int smallVariationFromOriginal = specialKeys[][j] + oneMoreOrOneLess;
+				int smallVariationFromOriginal = specialKeys[i][j] + oneMoreOrOneLess;
 				txt += (smallVariationFromOriginal)<0? 0: smallVariationFromOriginal;
 				txt += ",";
 			}
