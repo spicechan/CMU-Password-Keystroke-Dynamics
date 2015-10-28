@@ -87,7 +87,7 @@ public class PersistentDataStorage {
 			for(int i = 0; i < keyStrokes.size(); i++){
 				KeyPress k1 = keyStrokes.get(i);
 				KeyEvent ke1 = k1.getKeyIdentifier();
-				int keyCode = ke1.getKeyCode();
+				int keyCode = ke1.getExtendedKeyCode();
 				if ((keyCode != shiftCode) && (keyCode != capsCode) && (keyCode != backspaceCode)){
 					txt = "@attribute keyPressed";
 					txt += Integer.toString(i + id);
