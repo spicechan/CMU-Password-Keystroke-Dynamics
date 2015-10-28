@@ -121,15 +121,15 @@ public class PersistentDataStorage {
 		printer.print(txt);
 
 		/// When the user gets to X sessions it builds the denied cases
-		if(getNumberOfSessionsSoFar() == buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
-		//	createDeniedData(printer, s);
+		if(getNumberOfSessionsSoFar() >= buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
+			createDeniedData(printer, s);
 		}
 		printer.close();
 	}
 
 	private void createDeniedData(PrintWriter printer, Session s){
 		int amountOfKeyPresses = s.getKeyStrokes().size();
-		int amountOfSessions = buildTheDeniedCasesWhenItReachesThisAmountOfSessions; // Just a random maximum of sessions per user
+		int amountOfSessions = buildTheDeniedCasesWhenItReachesThisAmountOfSessions;
 		int FlightOrDwell = 2;
 
 		String[] keysPressed = new String[amountOfKeyPresses];
@@ -166,14 +166,17 @@ public class PersistentDataStorage {
 			System.out.println(", mean dwell time: " + meanFlightAndDwellData[keypressed][DWELL]);
 		}
 		
+		int meanSpecialKeys[] = new int[specialKeys.length];
 		
 		for (int i = 0; i < specialKeys.length; i++) {
-			int numSpecialKeys = 0;
-			int meanSpecialKeys[] = new int[5];
+			int sumSpecialKeys = 0;	
 			for (int sessionNumber = 0; sessionNumber < numberOfSessions; sessionNumber++) {
-				numSpecialKeys += specialKeys[sessionNumber][i];
+				sumSpecialKeys += specialKeys[sessionNumber][i];
 			}
-			meanSpecialKeys[i]= numSpecialKeys/numberOfSessions;
+			meanSpecialKeys[i]= sumSpecialKeys/numberOfSessions;
+			
+			//debug info
+			System.out.print("Mean of key " + i + ": " + meanSpecialKeys[i]);
 		}
 
 		//std var
@@ -211,7 +214,7 @@ public class PersistentDataStorage {
 		printer.print("% Denied data: variations of the originals");
 		Random rand = new Random();
 
-		for (int i = 0; i < numberOfSessions; i++) {
+		for (int i = 0; i < numberOfSessions*2; i++) {
 			printer.println();
 			String txt = "";
 			for (int keypressed = 0; keypressed < keysPressed.length; keypressed++) {
@@ -230,7 +233,7 @@ public class PersistentDataStorage {
 			//Variations of the special keys just adds 1, or substracts 1. And if that is less than 0, then it assigns 0.
 			for (int j = 0; j < specialKeys.length; j++) {
 				int oneMoreOrOneLess = rand.nextBoolean()? 1 : -1;
-				int smallVariationFromOriginal = specialKeys[i][j] + oneMoreOrOneLess;
+				int smallVariationFromOriginal = meanSpecialKeys[j] + oneMoreOrOneLess;
 				txt += (smallVariationFromOriginal)<0? 0: smallVariationFromOriginal;
 				txt += ",";
 			}
