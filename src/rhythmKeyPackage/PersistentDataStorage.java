@@ -7,8 +7,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class PersistentDataStorage {
 
@@ -52,8 +54,42 @@ public class PersistentDataStorage {
 		}
 		return 1;
 	}
+	
+	/**Cleans the data by removing backspaced characters.
+	 * Leaves backspace and other special key keystrokes
+	 * in place to be processed later.
+	 * 
+	 * @param s - the session to be cleaned
+	 * @return the cleaned session
+	 */
+	public Session cleanData(Session s) {
+		
+		List<KeyPress> keyStrokes = s.getKeyStrokes();
+		
+		//reverse list to process backspaces correctly
+		int length = keyStrokes.size();
+		List<KeyPress> keyStrokesReversed = new ArrayList<KeyPress>();
+		for (int i = length - 1; i >= 0; i--) {
+			keyStrokesReversed.add(keyStrokes.get(i));
+		}
+		
+		int backspaceCounter = 0;
+		
+		for (KeyPress k : keyStrokesReversed) {
+			Scanner scan = new Scanner(k.getKeyIdentifier().paramString());
+			scan.useDelimiter(",");
+			if (scan.next().equals("KEY_PRESSED")) {
+				
+			}
+			System.out.println(k.getKeyIdentifier().paramString());
+		}
+		
+		//temp return value
+		return s;
+	}
 
 	public void storeData(Session s){
+		s = cleanData(s);
 		//Set up to write to txt file
 		FileWriter write = null;
 		try {
