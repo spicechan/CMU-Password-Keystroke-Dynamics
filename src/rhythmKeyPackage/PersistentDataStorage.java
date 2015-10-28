@@ -73,6 +73,7 @@ public class PersistentDataStorage {
 		final int shiftCode = 16;
 		final int capsCode = 20; 
 		final int backspaceCode = 8;
+		final int leftShiftLoc = 2;
 
 		//Print the header if first time
 		if (id == 0){
@@ -105,7 +106,9 @@ public class PersistentDataStorage {
 
 			txt = "@attribute capsPresses numeric";
 			printer.println(txt);
-			txt = "@attribute shiftPresses numeric";
+			txt = "@attribute leftShiftPresses numeric";
+			printer.println(txt);
+			txt = "@attribute rightShiftPresses numeric";
 			printer.println(txt);
 			txt = "@attribute backspacePresses numeric";
 			printer.println(txt);
@@ -120,7 +123,7 @@ public class PersistentDataStorage {
 		//now write data
 		List<KeyPress> keyStrokes = s.getKeyStrokes();
 		printer.println();
-		int capsPresses = 0, shiftPresses = 0, backspacePresses = 0;
+		int capsPresses = 0, leftShiftPresses = 0, rightShiftPresses = 0, backspacePresses = 0;
 		for(int i = 0; i < keyStrokes.size(); i++){
 			txt = "";
 			KeyPress k1 = keyStrokes.get(i);
@@ -137,13 +140,18 @@ public class PersistentDataStorage {
 			txt += (int)(k1.getKeyup() - k1.getKeydown());	
 			txt += ",";
 			if (keyCode == capsCode) capsPresses++;
-			else if (keyCode == shiftCode) shiftPresses++;
+			else if (keyCode == shiftCode){
+				int keyLoc = ke1.getKeyLocation();
+				if (keyLoc == leftShiftLoc) leftShiftPresses++;
+				else rightShiftPresses++;
+			}
 			else if (keyCode == backspaceCode) backspacePresses++;
 			else printer.print(txt);
 		}
 
 		printer.print(capsPresses + ",");
-		printer.print(shiftPresses  + ",");
+		printer.print(leftShiftPresses  + ",");
+		printer.print(rightShiftPresses  + ",");
 		printer.print(backspacePresses + ",");
 
 		txt = "accepted";
