@@ -19,8 +19,8 @@ public class PersistentDataStorage {
 
 	String path;
 	String userName;
-	int buildTheDeniedCasesWhenItReachesThisAmountOfSessions = 5;
-	int amountOfSpecialKeysWeAreStoring = 3;
+	int buildTheDeniedCasesWhenItReachesThisAmountOfSessions = 50;
+	//int amountOfSpecialKeysWeAreStoring = 3;
 
 	public int getSessionId(){
 
@@ -122,6 +122,11 @@ public class PersistentDataStorage {
 
 		/// When the user gets to X sessions it builds the denied cases
 		if(getNumberOfSessionsSoFar() >= buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
+			//createDeniedData(printer, s);
+		}
+		
+		int i = 0;
+		if(i == 1){
 			createDeniedData(printer, s);
 		}
 		printer.close();
@@ -134,9 +139,9 @@ public class PersistentDataStorage {
 
 		String[] keysPressed = new String[amountOfKeyPresses];
 		double[][][] flightAndDwellData = new double[amountOfKeyPresses][amountOfSessions][FlightOrDwell];
-		int[][] specialKeys = new int[amountOfSessions][amountOfSpecialKeysWeAreStoring];
+		//int[][] specialKeys = new int[amountOfSessions][amountOfSpecialKeysWeAreStoring];
 
-		int numberOfSessions = fillArraysWithDataInFile(keysPressed, flightAndDwellData, specialKeys);
+		int numberOfSessions = fillArraysWithDataInFile(keysPressed, flightAndDwellData);
 
 		final int FLIGHT = 0;
 		final int DWELL = 1;
@@ -166,8 +171,8 @@ public class PersistentDataStorage {
 			System.out.println(", mean dwell time: " + meanFlightAndDwellData[keypressed][DWELL]);
 		}
 		
-		int meanSpecialKeys[] = new int[specialKeys.length];
-		
+		//int meanSpecialKeys[] = new int[specialKeys.length];
+		/*
 		for (int i = 0; i < specialKeys.length; i++) {
 			int sumSpecialKeys = 0;	
 			for (int sessionNumber = 0; sessionNumber < numberOfSessions; sessionNumber++) {
@@ -178,7 +183,8 @@ public class PersistentDataStorage {
 			//debug info
 			System.out.print("Mean of key " + i + ": " + meanSpecialKeys[i]);
 		}
-
+		 */
+		
 		//std var
 		System.out.println("Std variation");
 		int[][] standVariationFlightAndDwellData = new int[amountOfKeyPresses][FlightOrDwell];
@@ -223,20 +229,20 @@ public class PersistentDataStorage {
 				//I'm adding a 1 here below because I think to be denied it should be at least 100% over the std dev. nextRand returns something between 0 and 1. So this will always be between 100% and 200% over the std dev.
 				float percentageOfIncreaseOfDeniedData = 1 + rand.nextFloat(); // percentage above the std deviation. 0.3 means 30%, 1 means 100% more and so on. So if mean is 10, and std dev is 2, then it would introduce a 14 (mean (10) + std dev (2) + 100% increase (2) )
 
-				txt += keysPressed[keypressed];
-				txt += ",";
+				//txt += keysPressed[keypressed];
+				//txt += ",";
 				txt +=  (int) ( meanFlightAndDwellData[keypressed][FLIGHT] + (aboveOrBelowMean * (standVariationFlightAndDwellData[keypressed][FLIGHT] + (percentageOfIncreaseOfDeniedData * standVariationFlightAndDwellData[keypressed][FLIGHT]))));
 				txt += ",";
 				txt += (int) (meanFlightAndDwellData[keypressed][DWELL] + (aboveOrBelowMean * (standVariationFlightAndDwellData[keypressed][DWELL] + (percentageOfIncreaseOfDeniedData * standVariationFlightAndDwellData[keypressed][DWELL]))));
 				txt += ",";
 			}
 			//Variations of the special keys just adds 1, or substracts 1. And if that is less than 0, then it assigns 0.
-			for (int j = 0; j < specialKeys.length; j++) {
+			/*for (int j = 0; j < specialKeys.length; j++) {
 				int oneMoreOrOneLess = rand.nextBoolean()? 1 : -1;
 				int smallVariationFromOriginal = meanSpecialKeys[j] + oneMoreOrOneLess;
 				txt += (smallVariationFromOriginal)<0? 0: smallVariationFromOriginal;
 				txt += ",";
-			}
+			}*/
 			txt += "denied";
 			printer.print(txt);
 		}
@@ -270,7 +276,7 @@ public class PersistentDataStorage {
 	}
 
 
-	private int fillArraysWithDataInFile(String[] keysPressed, double[][][] flightAndDwellData, int[][] specialKeys){
+	private int fillArraysWithDataInFile(String[] keysPressed, double[][][] flightAndDwellData){
 		BufferedReader br = null;
 		boolean startGatheringData = false;
 
@@ -287,21 +293,22 @@ public class PersistentDataStorage {
 				System.out.println(sCurrentLine);
 				if (sCurrentLine.equalsIgnoreCase("% Accepted data")){
 					startGatheringData = true;
-					sCurrentLine = br.readLine(); //Move to the next line from the one with "@data"
+					sCurrentLine = br.readLine(); //Move to the next line from the one with "Accepted data"
 				}
 				if(startGatheringData){
 					String[] elementsSeparatedByCommas = sCurrentLine.split(",");
-					int iterateThroughTheKeyStrokesNotTheSpecialKeys = elementsSeparatedByCommas.length - amountOfSpecialKeysWeAreStoring - 1;
-					for (int i = 0; i < iterateThroughTheKeyStrokesNotTheSpecialKeys; i+=3) {
-						keysPressed[i/3] = elementsSeparatedByCommas[i];
-						flightAndDwellData[i/3][sessionIterator][FLIGHT] = Double.parseDouble(elementsSeparatedByCommas[i+1]);
-						flightAndDwellData[i/3][sessionIterator][DWELL] = Double.parseDouble(elementsSeparatedByCommas[i+2]);
+					int iterateThroughTheKeyStrokesNotTheSpecialKeys = elementsSeparatedByCommas.length - 1;
+					for (int i = 0; i < iterateThroughTheKeyStrokesNotTheSpecialKeys; i+=2) {
+						//keysPressed[i/3] = elementsSeparatedByCommas[i];
+						flightAndDwellData[i/2][sessionIterator][FLIGHT] = Double.parseDouble(elementsSeparatedByCommas[i]);
+						flightAndDwellData[i/2][sessionIterator][DWELL] = Double.parseDouble(elementsSeparatedByCommas[i+1]);
 					}
-					int lastIndexForSpecialKeys =  iterateThroughTheKeyStrokesNotTheSpecialKeys + amountOfSpecialKeysWeAreStoring - 1;
+					/*
+					int lastIndexForSpecialKeys =  iterateThroughTheKeyStrokesNotTheSpecialKeys - 1;
 					int j = 0;
 					for (int i = iterateThroughTheKeyStrokesNotTheSpecialKeys; i < lastIndexForSpecialKeys; i++, j++) {
 						specialKeys[sessionIterator][j] = Integer.parseInt(elementsSeparatedByCommas[i]);
-					}
+					}*/
 					sessionIterator++;
 				}
 			}
