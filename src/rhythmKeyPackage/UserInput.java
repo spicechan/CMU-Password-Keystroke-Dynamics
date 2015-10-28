@@ -2,7 +2,6 @@ package rhythmKeyPackage;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
-import java.util.List;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 
@@ -39,7 +38,7 @@ public class UserInput {
 		instructionsLabel = new JLabel("<HTML>Instructions:<br>"
 				+ "First enter your username and click start.<br>"
 				+ "Then type your password and click end.<br>"
-				+ "You can do this as many times as you want.</HTML>");
+				+ "You can enter your password as many times as you want.</HTML>");
 		
 		// frame setup
 		frame = new JFrame("Keystroke Dynamics Typing Terminal");
@@ -63,12 +62,12 @@ public class UserInput {
 				// Test code, uncomment to see test
 				/*System.out.println(textField.getText());*/
 				textField.setText("");
+				textField.addKeyListener(keyListener);
 				
 			}
 			else {
 				//startEndButton.setText("Start");
 				ArrayList<KeyPress> keyPressList = keyListener.getKeyPressList();
-				textField.removeKeyListener(keyListener);
 				/*for (KeyPress k1 : keyPressList) {
 					if (k1.getKeyup() == 0) {
 						for (KeyPress k2 : keyPressList) {
@@ -79,35 +78,9 @@ public class UserInput {
 						}
 					}
 				}*/
-				//now, get rid of duplicate keypresses
-				List <KeyPress> keyDownList = new ArrayList<KeyPress>();
-				List <KeyPress> finalKeyPressList  = new ArrayList<KeyPress>();
-				for(int i = 0; i < keyPressList.size(); i++){
-					//System.out.println("keydown detected!");
-					KeyPress kp1 = keyPressList.get(i);
-					if(kp1.getKeyup() == 0){ //keydown data only
-						keyDownList.add(kp1);
-					}
-					if(kp1.getKeydown() == 0){ //keyup data only
-						for(int j = 0; j < keyDownList.size(); j++){ //look to pair with keydown
-							//System.out.println("Looking for pair ...");
-							KeyPress kp2 = keyDownList.get(j);
-							if(kp1.getKeyIdentifier().getKeyCode() == (kp2.getKeyIdentifier().getKeyCode())){ //Pair found!
-								//System.out.println("Pair Found!");
-								kp2.setKeyup(kp1.getKeyup());
-								keyDownList.remove(j);
-								j = keyDownList.size();
-								finalKeyPressList.add(kp2);
-							}
-						}
-					}
-				}
-//				List <KeyPress> reverseFinalList = new ArrayList<KeyPress>();
-//				for(int i = finalKeyPressList.size()-1; i >= 0; i--){
-//					reverseFinalList.add(finalKeyPressList.get(i));
-//				}
-				session.setKeyStrokes(finalKeyPressList);
+				session.setKeyStrokes(keyPressList);
 				main.storeSession(session);
+				textField.removeKeyListener(keyListener);
 				// Test code, uncomment to see test
 				/*System.out.println("Length of list: " + keyPressList.size());
 				for (KeyPress k : keyPressList) {
