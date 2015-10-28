@@ -34,6 +34,7 @@ public class UserInput {
 		// become available to the key event listener
 		textField.setFocusTraversalKeysEnabled(false);
 		textField.setFocusable(true);
+		textField.addKeyListener(keyListener);
 		
 		instructionsLabel = new JLabel("<HTML>Instructions:<br>"
 				+ "First enter your username and click start.<br>"
@@ -62,12 +63,14 @@ public class UserInput {
 				// Test code, uncomment to see test
 				/*System.out.println(textField.getText());*/
 				textField.setText("");
+				keyListener.getKeyPressList();
+				textField.removeKeyListener(keyListener);
 				textField.addKeyListener(keyListener);
-				
 			}
 			else {
 				//startEndButton.setText("Start");
 				ArrayList<KeyPress> keyPressList = keyListener.getKeyPressList();
+				textField.removeKeyListener(keyListener);
 				/*for (KeyPress k1 : keyPressList) {
 					if (k1.getKeyup() == 0) {
 						for (KeyPress k2 : keyPressList) {
@@ -80,7 +83,6 @@ public class UserInput {
 				}*/
 				session.setKeyStrokes(keyPressList);
 				main.storeSession(session);
-				textField.removeKeyListener(keyListener);
 				// Test code, uncomment to see test
 				/*System.out.println("Length of list: " + keyPressList.size());
 				for (KeyPress k : keyPressList) {
