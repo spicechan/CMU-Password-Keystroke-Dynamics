@@ -90,7 +90,7 @@ public class PersistentDataStorage {
 	}
 
 	public void storeData(Session s){
-		s = cleanData(s);
+		//s = cleanData(s);
 		//Set up to write to txt file
 		FileWriter write = null;
 		try {
@@ -115,9 +115,8 @@ public class PersistentDataStorage {
 			List<KeyPress> keyStrokes = s.getKeyStrokes();
 
 			//Add the parameters
+			System.out.println(keyStrokes.size());
 			for(int i = 0; i < keyStrokes.size(); i++){
-				txt += " numeric";
-				printer.println(txt);
 				txt = "@attribute flightTime";
 				txt += Integer.toString(i + id);
 				txt += " numeric";	
@@ -141,7 +140,6 @@ public class PersistentDataStorage {
 		for(int i = 0; i < keyStrokes.size(); i++){
 			txt = "";
 			KeyPress k1 = keyStrokes.get(i);
-			KeyEvent ke1 = k1.getKeyIdentifier();
 			if (i + 1 < keyStrokes.size()){
 				KeyPress k2 = keyStrokes.get(i+1);
 				txt += (int)(k2.getKeydown() - k1.getKeyup());
