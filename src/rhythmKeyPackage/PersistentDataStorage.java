@@ -115,7 +115,6 @@ public class PersistentDataStorage {
 			List<KeyPress> keyStrokes = s.getKeyStrokes();
 
 			//Add the parameters
-			System.out.println(keyStrokes.size());
 			for(int i = 0; i < keyStrokes.size(); i++){
 				txt = "@attribute flightTime";
 				txt += Integer.toString(i + id);
