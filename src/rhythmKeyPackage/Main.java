@@ -4,10 +4,12 @@ public class Main {
 
 	private PersistentDataStorage pds;
 	private String username;
+	private int counter;
 	
 	public void startSession(){
 		UserInput ui = new UserInput(this);
 		ui.start();
+		counter = 0;
 	}
 	
 	public void storeUsername(String username) {
@@ -17,6 +19,8 @@ public class Main {
 	public void storeSession(Session session) {
 		this.pds = new PersistentDataStorage(username);
 		this.pds.storeData(session);
+		counter++;
+		System.out.println("Password typed: " + counter + " times.");
 	}
 	
 	public static void main(String[] args) {
