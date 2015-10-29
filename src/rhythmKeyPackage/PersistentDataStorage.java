@@ -155,7 +155,7 @@ public class PersistentDataStorage {
 		
 
 		/// When the user gets to X sessions it builds the denied cases
-		if(getNumberOfSessionsSoFar() >= buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
+		if(getNumberOfSessionsSoFar() == buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
 			createDeniedData(printer, s);
 		}
 
