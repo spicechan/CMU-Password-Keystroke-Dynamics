@@ -177,16 +177,13 @@ public class PersistentDataStorage {
 
 		txt = "accepted";
 		printer.print(txt);
+		
 
 		/// When the user gets to X sessions it builds the denied cases
-		if(getNumberOfSessionsSoFar() >= buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
+		if(getNumberOfSessionsSoFar() == buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
 			//createDeniedData(printer, s);
 		}
-		
-		int i = 0;
-		if(i == 1){
-			createDeniedData(printer, s);
-		}
+
 		printer.close();
 	}
 
@@ -349,10 +346,7 @@ public class PersistentDataStorage {
 
 			while ((sCurrentLine = br.readLine()) != null) {
 				System.out.println(sCurrentLine);
-				if (sCurrentLine.equalsIgnoreCase("% Accepted data")){
-					startGatheringData = true;
-					sCurrentLine = br.readLine(); //Move to the next line from the one with "Accepted data"
-				}
+				
 				if(startGatheringData){
 					String[] elementsSeparatedByCommas = sCurrentLine.split(",");
 					int iterateThroughTheKeyStrokesNotTheSpecialKeys = elementsSeparatedByCommas.length - 1;
@@ -368,6 +362,10 @@ public class PersistentDataStorage {
 						specialKeys[sessionIterator][j] = Integer.parseInt(elementsSeparatedByCommas[i]);
 					}*/
 					sessionIterator++;
+				}
+				if (sCurrentLine.equalsIgnoreCase("% Accepted data")){
+					startGatheringData = true;
+					sCurrentLine = br.readLine(); //Move to the next line from the one with "Accepted data"
 				}
 			}
 
@@ -395,12 +393,12 @@ public class PersistentDataStorage {
 			br = new BufferedReader(new FileReader(this.userName + ".arff"));
 
 			while ((sCurrentLine = br.readLine()) != null) {
-				if (sCurrentLine.equalsIgnoreCase("@data")){
-					startGatheringData = true;
-					sCurrentLine = br.readLine(); //Move to the next line from the one with "@data"
-				}
 				if(startGatheringData){
 					sessionIterator++;
+				}
+				if (sCurrentLine.equalsIgnoreCase("% Accepted data")){
+					startGatheringData = true;
+					sCurrentLine = br.readLine(); //Move to the next line from the one with "% Accepted data"
 				}
 			}
 
