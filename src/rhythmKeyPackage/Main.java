@@ -20,7 +20,12 @@ public class Main {
 		this.pds = new PersistentDataStorage(username);
 		this.pds.storeData(session);
 		counter++;
-		System.out.println("Password typed: " + counter + " times.");
+		if (counter == 1) {
+			System.out.println("Password typed: " + counter + " time.");
+		}
+		else {
+			System.out.println("Password typed: " + counter + " times.");
+		}
 	}
 	
 	public static void main(String[] args) {

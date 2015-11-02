@@ -21,6 +21,7 @@ public class PersistentDataStorage {
 	String path;
 	String userName;
 	int buildTheDeniedCasesWhenItReachesThisAmountOfSessions = 50;
+	int backspaceTotal = 0;
 	//int amountOfSpecialKeysWeAreStoring = 3;
 
 	public int getSessionId(){
@@ -75,18 +76,19 @@ public class PersistentDataStorage {
 		}
 		
 		int backspaceCounter = 0;
-		int backspaceTotal = 0;
 		
 		//process backspaces
 		List<KeyPress> keyStrokesReversedBack = new ArrayList<KeyPress>();
 		for (int i = 0; i < length; i++) {
 			KeyPress k = keyStrokesReversed.get(i);
+			//printing for debugging
 			//Scanner scan = new Scanner(k.getKeyIdentifier().paramString());
 			//scan.useDelimiter(",");
 			//if(k.getKeyIdentifier().getExtendedKeyCode() == backspaceKeycode) {
 			KeyEvent event = k.getKeyIdentifier();
-			if(event.VK_BACK_SPACE == event.getKeyCode()
-					|| event.VK_DELETE == event.getKeyCode()) {
+			int keyCode = event.getKeyCode();
+			if(event.VK_BACK_SPACE == keyCode
+			|| event.VK_DELETE == keyCode) {
 				backspaceCounter++;
 				backspaceTotal++;
 			}
@@ -96,6 +98,7 @@ public class PersistentDataStorage {
 			else {
 				keyStrokesReversedBack.add(k);
 			}
+			//printing for debugging
 			//scan.close();
 			//System.out.println(k.getKeyIdentifier().paramString());
 		}
@@ -108,9 +111,8 @@ public class PersistentDataStorage {
 			System.out.println(keyStrokesReversedBack.get(i).getKeyIdentifier().paramString());
 		}
 		
+		//set return value
 		s.setKeyStrokes(keyStrokesBackspaced);
-		
-		//temp return value
 		return s;
 	}
 
