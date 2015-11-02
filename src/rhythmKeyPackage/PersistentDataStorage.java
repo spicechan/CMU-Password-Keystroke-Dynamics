@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 
 public class PersistentDataStorage {
 
@@ -63,9 +62,10 @@ public class PersistentDataStorage {
 	 * @param s - the session to be cleaned
 	 * @return the cleaned session
 	 */
-	public Session cleanData(Session s) {
+	public synchronized Session cleanData(Session s) {
 		
 		List<KeyPress> keyStrokes = s.getKeyStrokes();
+		int backspaceKeycode = 8;
 		
 		//reverse list to process backspaces correctly
 		int length = keyStrokes.size();
@@ -75,22 +75,47 @@ public class PersistentDataStorage {
 		}
 		
 		int backspaceCounter = 0;
+		int backspaceTotal = 0;
 		
-		for (KeyPress k : keyStrokesReversed) {
-			Scanner scan = new Scanner(k.getKeyIdentifier().paramString());
-			scan.useDelimiter(",");
-			if (scan.next().equals("KEY_PRESSED")) {
-				
+		//process backspaces
+		List<KeyPress> keyStrokesReversedBack = new ArrayList<KeyPress>();
+		for (int i = 0; i < length; i++) {
+			KeyPress k = keyStrokesReversed.get(i);
+			//Scanner scan = new Scanner(k.getKeyIdentifier().paramString());
+			//scan.useDelimiter(",");
+			//if(k.getKeyIdentifier().getExtendedKeyCode() == backspaceKeycode) {
+			KeyEvent event = k.getKeyIdentifier();
+			if(event.VK_BACK_SPACE == event.getKeyCode()
+					|| event.VK_DELETE == event.getKeyCode()) {
+				backspaceCounter++;
+				backspaceTotal++;
 			}
-			System.out.println(k.getKeyIdentifier().paramString());
+			else if (backspaceCounter > 0) {
+				backspaceCounter --;
+			}
+			else {
+				keyStrokesReversedBack.add(k);
+			}
+			//scan.close();
+			//System.out.println(k.getKeyIdentifier().paramString());
 		}
+		
+		//reverse list to put back in correct order
+		length = keyStrokesReversedBack.size();
+		List<KeyPress> keyStrokesBackspaced = new ArrayList<KeyPress>();
+		for (int i = length - 1; i >= 0; i--) {
+			keyStrokesBackspaced.add(keyStrokesReversedBack.get(i));
+			System.out.println(keyStrokesReversedBack.get(i).getKeyIdentifier().paramString());
+		}
+		
+		s.setKeyStrokes(keyStrokesBackspaced);
 		
 		//temp return value
 		return s;
 	}
 
 	public void storeData(Session s){
-		//s = cleanData(s);
+		s = cleanData(s);
 		//Set up to write to txt file
 		FileWriter write = null;
 		try {
