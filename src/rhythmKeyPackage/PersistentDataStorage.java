@@ -152,7 +152,7 @@ public class PersistentDataStorage {
 				txt += " numeric";
 				printer.println(txt);
 			}
-
+			printer.println("@attribute backspaceCount numeric");
 			printer.println("@attribute class {accepted,denied}");
 			printer.println("");
 			printer.println("@data");
@@ -176,7 +176,10 @@ public class PersistentDataStorage {
 			txt += ",";
 			printer.print(txt);
 		}
-
+		
+		txt += backspaceTotal;
+		txt += ",";
+		printer.print(txt);
 		txt = "accepted";
 		printer.print(txt);
 		
