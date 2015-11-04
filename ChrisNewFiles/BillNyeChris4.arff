@@ -1,0 +1,46 @@
+@relation BillNyeChris4.accepted.passwords.keystroke.rhythm
+@attribute flightTime0 numeric
+@attribute dwellTime0 numeric
+@attribute flightTime1 numeric
+@attribute dwellTime1 numeric
+@attribute flightTime2 numeric
+@attribute dwellTime2 numeric
+@attribute flightTime3 numeric
+@attribute dwellTime3 numeric
+@attribute flightTime4 numeric
+@attribute dwellTime4 numeric
+@attribute backspaceCount numeric
+@attribute class {accepted,denied}
+
+@data
+% Accepted data
+16,80,32,80,40,56,-584,96,0,648,0,648,0,accepted
+24,88,0,81,72,79,-608,81,0,623,0,623,0,accepted
+40,104,7,104,272,65,-904,96,0,968,0,968,0,accepted
+137,175,8,96,272,80,-1112,104,0,1152,0,1152,0,accepted
+47,96,17,88,168,80,-815,103,0,911,0,911,0,accepted
+159,104,41,96,128,88,-856,63,0,961,0,961,0,accepted
+56,103,-8,80,96,73,-687,95,0,744,0,744,0,accepted
+40,96,-16,88,80,80,-728,88,0,768,0,768,0,accepted
+96,104,-8,96,-567,72,-96,751,0,104,0,104,0,accepted
+32,96,-8,80,136,88,-672,88,0,696,0,696,0,accepted
+56,88,-16,96,113,79,-712,72,0,800,0,800,0,accepted
+72,80,-40,88,88,80,-680,80,0,736,0,736,0,accepted
+15,81,7,89,144,96,-720,72,0,800,0,800,0,accepted
+47,89,-16,88,72,88,-671,72,0,775,0,775,0,accepted
+16,96,-16,104,72,80,-591,64,0,647,0,647,0,accepted
+32,104,-24,88,64,80,-608,96,0,672,0,672,0,accepted
+40,112,-25,113,72,80,-728,89,0,776,0,776,0,accepted
+40,97,-23,95,104,72,-751,95,0,808,0,808,0,accepted
+17,104,0,96,120,31,-728,72,0,1754,0,1754,0,accepted
+23,97,24,104,72,80,-744,104,0,824,0,824,0,accepted
+73,127,-16,128,64,71,-759,88,0,832,0,832,0,accepted
+7,80,-7,88,96,88,-672,104,0,768,0,768,0,accepted
+65,87,7,96,64,73,-696,88,0,744,0,744,0,accepted
+56,119,-8,96,-656,96,0,720,0,720,0,accepted
+64,72,72,144,160,88,-936,88,0,1032,0,1032,0,accepted
+32,104,-16,104,0,80,-656,104,0,760,0,760,0,accepted
+23,88,-24,121,64,80,-704,88,0,760,0,760,0,accepted
+63,128,-15,112,56,95,-769,81,0,833,0,833,0,accepted
+16,87,24,96,48,80,-672,88,0,752,0,752,0,accepted
+24,88,32,64,80,72,-704,96,0,776,0,776,0,accepted
