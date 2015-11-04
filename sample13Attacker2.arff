@@ -1,0 +1,46 @@
+@relation BillNyeChris5.accepted.passwords.keystroke.rhythm
+@attribute flightTime0 numeric
+@attribute dwellTime0 numeric
+@attribute flightTime1 numeric
+@attribute dwellTime1 numeric
+@attribute flightTime2 numeric
+@attribute dwellTime2 numeric
+@attribute flightTime3 numeric
+@attribute dwellTime3 numeric
+@attribute flightTime4 numeric
+@attribute dwellTime4 numeric
+@attribute flightTime5 numeric
+@attribute dwellTime5 numeric
+@attribute flightTime6 numeric
+@attribute dwellTime6 numeric
+@attribute flightTime7 numeric
+@attribute dwellTime7 numeric
+@attribute backspaceCount numeric
+@attribute class {accepted,denied}
+
+@data
+% Accepted data
+-88,217,312,88,-15,95,7,72,40,105,23,80,-80,177,0,95,0,denied
+-87,135,136,95,24,96,-16,88,24,112,96,89,-48,87,0,128,0,denied
+-88,160,128,104,0,97,8,71,40,96,112,80,-152,96,0,160,0,denied
+-55,135,104,104,-24,96,0,72,16,128,1503,80,-64,145,0,96,0,denied
+-96,176,128,96,23,80,0,73,15,128,175,89,-144,105,0,175,0,denied
+-64,145,113,103,16,79,0,73,0,112,120,79,-145,97,0,176,0,denied
+-80,168,104,96,7,97,89,72,8,135,489,80,-112,287,0,112,0,denied
+-120,248,105,135,7,96,8,89,-8,96,128,88,-41,112,0,64,0,denied
+-88,175,120,96,-7,96,24,71,0,105,191,64,-79,136,0,87,0,denied
+-80,176,136,96,-40,96,56,88,-23,104,184,71,-64,128,0,88,0,denied
+-72,176,121,103,-56,136,56,88,-56,120,160,80,-80,130,0,80,0,denied
+-80,152,112,96,-24,104,7,88,-41,121,153,80,-72,136,0,96,0,denied
+-56,144,112,88,-39,103,7,88,-24,121,152,88,-88,144,0,88,0,denied
+-80,136,129,103,57,103,16,95,8,112,57,72,56,55,0,161,0,denied
+-56,128,152,80,-48,80,96,96,-48,104,224,72,-136,88,0,152,0,denied
+-64,144,120,88,-24,88,40,72,-64,128,144,88,-64,136,0,79,0,denied
+-64,160,152,80,-40,96,104,88,-64,104,152,88,-81,144,0,89,0,denied
+-64,144,113,95,-42,113,56,106,-80,119,152,81,-63,127,0,95,0,denied
+-56,143,144,96,-16,72,40,80,-7,88,136,71,-80,128,0,104,0,denied
+-71,152,112,119,-24,88,80,96,-56,104,192,72,-128,88,0,136,0,denied
+-56,120,104,104,-80,112,80,112,-64,96,128,72,-64,136,0,88,0,denied
+-64,120,112,96,-48,96,64,88,-56,120,136,72,-80,112,0,88,0,denied
+-112,376,160,112,-16,96,48,72,-48,104,96,80,-64,112,0,80,0,denied
+-73,128,120,89,-8,95,56,81,-40,112,152,71,-56,128,0,80,0,denied
