@@ -56,17 +56,17 @@ public class PersistentDataStorage {
 		return 1;
 	}
 	
-	/**Cleans the data by removing backspaced characters.
-	 * Leaves backspace and other special key keystrokes
+	/**Cleans the data by removing backspaced characters and backspaces.
+	 * Leaves other special key keystrokes
 	 * in place to be processed later.
 	 * 
 	 * @param s - the session to be cleaned
 	 * @return the cleaned session
 	 */
-	public synchronized Session cleanData(Session s) {
+	public Session cleanData(Session s) {
 		
 		List<KeyPress> keyStrokes = s.getKeyStrokes();
-		int backspaceKeycode = 8;
+		//int backspaceKeycode = 8;
 		
 		//reverse list to process backspaces correctly
 		int length = keyStrokes.size();
@@ -117,6 +117,7 @@ public class PersistentDataStorage {
 	}
 
 	public void storeData(Session s){
+		//clean data of backspaces
 		s = cleanData(s);
 		//Set up to write to txt file
 		FileWriter write = null;
