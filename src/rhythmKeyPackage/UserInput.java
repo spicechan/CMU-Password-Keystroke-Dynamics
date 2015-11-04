@@ -30,7 +30,9 @@ public class UserInput {
 		startEndButton = new JButton(action);
 		startEndButton.setText("Start");
 		startEndButton.setEnabled(true);
+		EnterAction enterAction = new EnterAction();
 		textField = new JTextField(20);
+		textField.addActionListener(enterAction);
 		// Disables focus traversal and the Tab events
 		// become available to the key event listener
 		textField.setFocusTraversalKeysEnabled(false);
@@ -39,7 +41,7 @@ public class UserInput {
 		
 		instructionsLabel = new JLabel("<HTML>Instructions:<br>"
 				+ "First enter your username and click start.<br>"
-				+ "Then type your password and click end.<br>"
+				+ "Then type your password and click enter.<br>"
 				+ "You can enter your password as many times as you want.</HTML>");
 		
 		// frame setup
@@ -59,7 +61,7 @@ public class UserInput {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (startEndButton.getText().equals("Start")) {
-				startEndButton.setText("End");
+				startEndButton.setText("Enter");
 				main.storeUsername(textField.getText());
 				// Test code, uncomment to see test
 				/*System.out.println(textField.getText());*/
@@ -116,6 +118,52 @@ public class UserInput {
 				textField.setText("");
 				textField.addKeyListener(keyListener);
 			}
+		}
+
+		@Override
+		public Object getValue(String key) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public void putValue(String key, Object value) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setEnabled(boolean b) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public boolean isEnabled() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		@Override
+		public void addPropertyChangeListener(
+				PropertyChangeListener listener) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void removePropertyChangeListener(
+				PropertyChangeListener listener) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	private class EnterAction implements Action {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			//e.getActionCommand().equals("");
+			System.out.println(e.getActionCommand());
 		}
 
 		@Override
