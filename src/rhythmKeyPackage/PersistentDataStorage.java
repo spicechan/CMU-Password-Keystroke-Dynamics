@@ -167,18 +167,18 @@ public class PersistentDataStorage {
 		for(int i = 0; i < keyStrokes.size(); i++){
 			txt = "";
 			KeyPress k1 = keyStrokes.get(i);
-			if (i + 1 < keyStrokes.size()){
+			if (i + 1 < keyStrokes.size()){ //add flight
 				KeyPress k2 = keyStrokes.get(i+1);
-				txt += (int)(k2.getKeydown() - k1.getKeyup());
+				txt += (k2.getKeydown() - k1.getKeyup());
 			}
 			else txt += "0";
 			txt += ",";
-			txt += (int)(k1.getKeyup() - k1.getKeydown());	
+			txt += (int)(k1.getKeyup() - k1.getKeydown()); //add dwell
 			txt += ",";
 			printer.print(txt);
 		}
 		
-		txt += backspaceTotal;
+		txt = "" + backspaceTotal;
 		txt += ",";
 		printer.print(txt);
 		txt = "accepted";
