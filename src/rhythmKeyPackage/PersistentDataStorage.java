@@ -163,7 +163,7 @@ public class PersistentDataStorage {
 
 		//now write data
 		List<KeyPress> keyStrokes = s.getKeyStrokes();
-		//printer.println();
+		printer.println();
 		for(int i = 0; i < keyStrokes.size(); i++){
 			txt = "";
 			KeyPress k1 = keyStrokes.get(i);
@@ -175,19 +175,19 @@ public class PersistentDataStorage {
 			txt += ",";
 			txt += (int)(k1.getKeyup() - k1.getKeydown());	
 			txt += ",";
-			//printer.print(txt);
+			printer.print(txt);
 		}
 		
 		txt += backspaceTotal;
 		txt += ",";
-		//printer.print(txt);
+		printer.print(txt);
 		txt = "accepted";
-		//printer.print(txt);
+		printer.print(txt);
 		
 
 		/// When the user gets to X sessions it builds the denied cases
 		//if(getNumberOfSessionsSoFar() == buildTheDeniedCasesWhenItReachesThisAmountOfSessions){
-			createDeniedData(printer, s);
+			//createDeniedData(printer, s);
 		//}
 
 		printer.close();
