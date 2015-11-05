@@ -23,27 +23,35 @@ public class KeyTimeListener implements KeyListener {
 
 	/** Handle the key-pressed event from the text field. */
 	public void keyPressed(KeyEvent e) {
-		this.currentKeyPress.setKeyIdentifier(e);
-		this.currentKeyPress.setKeydown(System.currentTimeMillis());
-		this.currentKeyPress.setKeyup(0);
-		keyPressList.add(currentKeyPress);
-		currentKeyPress = new KeyPress();
-	}
-
-	/** Handle the key-released event from the text field. */
-	public void keyReleased(KeyEvent e) {
-		//Sets special flag if the last keyup is enter
+		//Sets special flag if the last key pressed is enter
 		int keyCode = e.getKeyCode();
 		if (e.VK_ENTER == keyCode) {
 			isEnter = true;		
 		}
-		
-		//process key-released event
-		this.currentKeyPress.setKeyIdentifier(e);
-		this.currentKeyPress.setKeydown(0);
-		this.currentKeyPress.setKeyup(System.currentTimeMillis());
-		keyPressList.add(currentKeyPress);
-		currentKeyPress = new KeyPress();
+		else {
+			this.currentKeyPress.setKeyIdentifier(e);
+			this.currentKeyPress.setKeydown(System.currentTimeMillis());
+			this.currentKeyPress.setKeyup(0);
+			keyPressList.add(currentKeyPress);
+			currentKeyPress = new KeyPress();
+		}
+	}
+
+	/** Handle the key-released event from the text field. */
+	public void keyReleased(KeyEvent e) {
+		//Sets special flag if the last key released is enter
+		int keyCode = e.getKeyCode();
+		if (e.VK_ENTER == keyCode) {
+			isEnter = true;		
+		}
+		else {
+			//process key-released event
+			this.currentKeyPress.setKeyIdentifier(e);
+			this.currentKeyPress.setKeydown(0);
+			this.currentKeyPress.setKeyup(System.currentTimeMillis());
+			keyPressList.add(currentKeyPress);
+			currentKeyPress = new KeyPress();
+		}
 	}
 	
 	public ArrayList<KeyPress> getKeyPressList() {

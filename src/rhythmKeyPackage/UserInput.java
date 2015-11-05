@@ -18,6 +18,8 @@ public class UserInput {
 	private Session session;
 	private JFrame frame;
 	private KeyTimeListener keyListener;
+	private StartEndAction startEndAction;
+	private EnterAction enterAction;
 	private JButton startEndButton;
 	private JTextField textField;
 	private JLabel instructionsLabel;
@@ -25,14 +27,15 @@ public class UserInput {
 	public UserInput(Main main) {
 		this.main = main;
 		session = new Session();
+		//set up listeners and actions
 		keyListener = new KeyTimeListener();
-		StartEndAction action = new StartEndAction();
-		startEndButton = new JButton(action);
+		enterAction = new EnterAction();
+		startEndAction = new StartEndAction();
+		//create the button to start and end typing
+		startEndButton = new JButton(startEndAction);
 		startEndButton.setText("Start");
 		startEndButton.setEnabled(true);
-		EnterAction enterAction = new EnterAction();
 		textField = new JTextField(20);
-		textField.addActionListener(enterAction);
 		// Disables focus traversal and the Tab events
 		// become available to the key event listener
 		textField.setFocusTraversalKeysEnabled(false);
@@ -53,70 +56,77 @@ public class UserInput {
 		frame.pack();
 	}
 	
+	/**
+	 * Starts the GUI by making it visible
+	 * Must be called externally after setting up
+	 */
 	public void start() {
 		frame.setVisible(true);
 	}
 	
+	/**
+	 * Calls main to store the password collected by the keystrokes
+	 * in textField after organizing the keystrokes
+	 */
+	public void storePassword() {
+		ArrayList<KeyPress> keyPressList = keyListener.getKeyPressList();
+		textField.removeKeyListener(keyListener);
+		
+		//now, get rid of duplicate keypresses
+		List <KeyPress> keyDownList = new ArrayList<KeyPress>();
+		List <KeyPress> finalKeyPressList  = new ArrayList<KeyPress>();
+		for(int i = 0; i < keyPressList.size(); i++){
+			//System.out.println("keydown detected!");
+			KeyPress kp1 = keyPressList.get(i);
+			if(kp1.getKeyup() == 0){ //keydown data only
+				keyDownList.add(kp1);
+			}
+			if(kp1.getKeydown() == 0){ //keyup data only
+				for(int j = 0; j < keyDownList.size(); j++){ //look to pair with keydown
+					//System.out.println("Looking for pair ...");
+					KeyPress kp2 = keyDownList.get(j);
+					if(kp1.getKeyIdentifier().getKeyCode() == (kp2.getKeyIdentifier().getKeyCode())){ //Pair found!
+						//System.out.println("Pair Found!");
+						kp2.setKeyup(kp1.getKeyup());
+						keyDownList.remove(j);
+						j = keyDownList.size();
+						finalKeyPressList.add(kp2);
+					}
+				}
+			}
+		}
+		session.setKeyStrokes(finalKeyPressList);
+		main.storeSession(session);
+		textField.setText("");
+		textField.addKeyListener(keyListener);
+		
+		// Test code
+		/*System.out.println("Length of list: " + keyPressList.size());
+		for (KeyPress k : keyPressList) {
+			System.out.print(k.getKeyIdentifier().getKeyChar());
+		}
+		System.out.println();*/
+	}
+	
+	/**
+	 * The action performed by startEndButton
+	 */
 	private class StartEndAction implements Action {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (startEndButton.getText().equals("Start")) {
 				startEndButton.setText("Enter");
 				main.storeUsername(textField.getText());
-				// Test code, uncomment to see test
+				// Test code to see what's in textField
 				/*System.out.println(textField.getText());*/
 				textField.setText("");
 				keyListener.getKeyPressList();
 				textField.removeKeyListener(keyListener);
 				textField.addKeyListener(keyListener);
+				textField.addActionListener(enterAction);
 			}
 			else {
-				//startEndButton.setText("Start");
-				ArrayList<KeyPress> keyPressList = keyListener.getKeyPressList();
-				textField.removeKeyListener(keyListener);
-				/*for (KeyPress k1 : keyPressList) {
-					if (k1.getKeyup() == 0) {
-						for (KeyPress k2 : keyPressList) {
-							if (k1.getKeyIdentifier().getKeyCode() == k2.getKeyIdentifier().getKeyCode() && k2.getKeydown() == 0) {
-								keyPressList.remove(k2);
-								k1.setKeyup(k2.getKeyup());
-							}
-						}
-					}
-				}*/
-				//now, get rid of duplicate keypresses
-				List <KeyPress> keyDownList = new ArrayList<KeyPress>();
-				List <KeyPress> finalKeyPressList  = new ArrayList<KeyPress>();
-				for(int i = 0; i < keyPressList.size(); i++){
-					//System.out.println("keydown detected!");
-					KeyPress kp1 = keyPressList.get(i);
-					if(kp1.getKeyup() == 0){ //keydown data only
-						keyDownList.add(kp1);
-					}
-					if(kp1.getKeydown() == 0){ //keyup data only
-						for(int j = 0; j < keyDownList.size(); j++){ //look to pair with keydown
-							//System.out.println("Looking for pair ...");
-							KeyPress kp2 = keyDownList.get(j);
-							if(kp1.getKeyIdentifier().getKeyCode() == (kp2.getKeyIdentifier().getKeyCode())){ //Pair found!
-								//System.out.println("Pair Found!");
-								kp2.setKeyup(kp1.getKeyup());
-								keyDownList.remove(j);
-								j = keyDownList.size();
-								finalKeyPressList.add(kp2);
-							}
-						}
-					}
-				}
-				session.setKeyStrokes(finalKeyPressList);
-				main.storeSession(session);
-				// Test code, uncomment to see test
-				/*System.out.println("Length of list: " + keyPressList.size());
-				for (KeyPress k : keyPressList) {
-					System.out.print(k.getKeyIdentifier().getKeyChar());
-				}
-				System.out.println();*/
-				textField.setText("");
-				textField.addKeyListener(keyListener);
+				storePassword();
 			}
 		}
 
@@ -159,11 +169,15 @@ public class UserInput {
 		}
 	}
 	
+	/**
+	 * The action performed if the user pressed the enter key
+	 */
 	private class EnterAction implements Action {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//e.getActionCommand().equals("");
-			System.out.println(e.getActionCommand());
+			if (keyListener.isEnter()) {
+				storePassword();
+			}
 		}
 
 		@Override
