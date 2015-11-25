@@ -7,22 +7,25 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class PersistentDataStorage {
+	
+	private String path;
+	private String userName;
+	private int buildTheDeniedCasesWhenItReachesThisAmountOfSessions = 100;
+	private int backspaceTotal = 0;
+	//private int amountOfSpecialKeysWeAreStoring = 3;
 
 	public PersistentDataStorage(String userName){
 		this.path = userName + ".arff";
 		this.userName = userName;
 	}
-
-	String path;
-	String userName;
-	int buildTheDeniedCasesWhenItReachesThisAmountOfSessions = 100;
-	int backspaceTotal = 0;
-	//int amountOfSpecialKeysWeAreStoring = 3;
 
 	public int getSessionId(){
 
@@ -108,7 +111,8 @@ public class PersistentDataStorage {
 		List<KeyPress> keyStrokesBackspaced = new ArrayList<KeyPress>();
 		for (int i = length - 1; i >= 0; i--) {
 			keyStrokesBackspaced.add(keyStrokesReversedBack.get(i));
-			System.out.println(keyStrokesReversedBack.get(i).getKeyIdentifier().paramString());
+			// Print statement for debugging
+			//System.out.println(keyStrokesReversedBack.get(i).getKeyIdentifier().paramString());
 		}
 		
 		//set return value
@@ -125,7 +129,6 @@ public class PersistentDataStorage {
 			write = new FileWriter(path, true);
 		} catch (IOException e) {
 			System.out.println("Error storing Data");
-			return;
 		}
 		PrintWriter printer = new PrintWriter(write);
 
@@ -423,5 +426,286 @@ public class PersistentDataStorage {
 
 	public int getCurrentSessionId(){
 		return 0; //Chris: Change this for the method that looks at the number on the last line of the file, yoou can assume userName is filled out with the user name.
+	}
+
+	/**
+	 * Reads the flight time, dwell time, and number of backspaces from an arff file
+	 */
+	public void readArff() {
+		Path path = FileSystems.getDefault().getPath(this.path);
+		try {
+			Scanner scan = new Scanner(path);
+			
+			// skips first two strings
+			// print statements for debugging
+			String s = scan.next();
+			//System.out.println(s);
+			s = scan.next();
+			//System.out.println(s);
+			
+			// print statement for debugging
+			//System.out.println("LOOP START");
+			int keystrokeCount = 0; 
+			// loops over attribute tags at beginning of file to count them
+			while (true) {
+				s = scan.next();
+				if (s.equals("{accepted,denied}")) { break; }
+				s = s.substring(0, s.length() - 1);
+				// print statement for debugging
+				//System.out.println(s);
+				
+				if (s.equals("dwellTime") ||
+				    s.equals("flightTime") ||
+				    s.equals("backspaceCoun")) {
+					keystrokeCount++;
+				}
+			}
+			// print statement for debugging
+			//System.out.println("LOOP END " + keystrokeCount);
+			
+			// Stores all password keystroke info (dwell times, flight times, backspace count)
+			ArrayList<int[]> allKeystrokes = new ArrayList<int[]>();
+			
+			// skips next four strings
+			// print statements for debugging
+			s = scan.next();
+			//System.out.println(s);
+			s = scan.next();
+			//System.out.println(s);
+			s = scan.next();
+			//System.out.println(s);
+			s = scan.next();
+			//System.out.println(s);
+			
+			// change delimiter to a comma since numbers are separated by commas
+			scan.useDelimiter(",");
+			int time = 0;
+			
+			// scan file for keystroke info and add to arrays
+			while (scan.hasNext()) {
+				int[] keystrokes = new int[keystrokeCount];
+				
+				for (int i = 0; i < keystrokeCount; i++) {
+					s = scan.next();
+					s = s.trim();
+					time = Integer.valueOf(s);
+					keystrokes[i] = time;
+				}
+				
+				// Printing for debugging
+				/*for (int i = 0; i < keystrokeCount; i++) {
+					System.out.print(keystrokes[i] + ", ");
+				}
+				System.out.println();
+				*/
+				
+				allKeystrokes.add(keystrokes);
+				
+				// skip next string, will have a \n so must reset delimiter
+				scan.reset();
+				s = scan.next();
+				// print statement for debugging
+				//System.out.println(s);
+				scan.useDelimiter(",");
+			}
+			
+			// !!!!!
+			// call specified method for using read in data here!
+			int numDevs = 2;
+			createRandomDenied(allKeystrokes, numDevs);
+			
+			scan.close();
+			
+		} catch (IOException e) {
+			System.out.println("Specified file name " + this.path + " doesn't match any files.");
+		}	
+	}
+	
+	/** 
+	 * Finds the mean of a set of data read in as an array list of integer arrays.
+	 * The integer arrays are all expected to be the same length and contain
+	 * times.  The average will be taken of all times in the same index in each array.
+	 * Uses doubles for calculations to keep rounding errors down even though ints should be used later.
+	 * 
+	 * @param allTimes
+	 * 	The data set to take the average of times
+	 * @return
+	 * 	The average of the time in the index of the arrays sent in
+	 */
+	private ArrayList<Double> findMeanSets(ArrayList<int[]> allTimes) {
+		int size = allTimes.size();
+		int numTimes = allTimes.get(0).length;
+		ArrayList<Double> avgTimes = new ArrayList<Double>();
+		// initialize avgTimes with all 0s
+		for (int i = 0; i < numTimes; i++) {
+			avgTimes.add(0.0);
+		}
+		
+		// loop over outer array list to add times for every array
+		for (int i = 0; i < size; i++) {
+			int[] times = allTimes.get(i);
+			// loop over inner array to add times for each index
+			for (int j = 0; j < numTimes; j++) {
+				avgTimes.set(j, avgTimes.get(j) + times[j]);
+			}
+		}
+		
+		for (int i = 0; i < numTimes; i++) {
+			avgTimes.set(i, avgTimes.get(i) / size);
+		}
+		
+		// Printing for debugging
+		/*
+		System.out.print("Average times: ");
+		for (int i = 0; i < numTimes; i++ ) {
+			System.out.print(avgTimes.get(i) + " ");
+		}
+		System.out.println();
+		*/
+
+		return avgTimes;
+	}
+	
+	/**
+	 * Find the standard deviation of the times sent in of an array list of arrays.
+	 * Uses the averages sent in to calculate the standard deviation.
+	 * Uses doubles for calculations to keep rounding errors down even though ints should be used later.
+	 * 
+	 * @param allTimes
+	 * 	The data set to take the standard deviation of times
+	 * @param means
+	 * 	The average of allTimes by index in array
+	 * @return
+	 * 	The standard deviation of each index in allTimes
+	 */
+	private ArrayList<Double> findStdDeviationSets(ArrayList<int[]> allTimes, ArrayList<Double> means) {
+		int size = allTimes.size();
+		int numTimes = allTimes.get(0).length;
+		ArrayList<Double> stdDevs = new ArrayList<Double>();
+		// initialize stdDevDs with all 0s
+		for (int i = 0; i < numTimes; i++) {
+			stdDevs.add(0.0);
+		}
+		
+		// loop over outer array list to add times for every array
+		for (int i = 0; i < size; i++) {
+			int[] times = allTimes.get(i);
+			// loop over inner array to add times for each index
+			for (int j = 0; j < numTimes; j++) {
+				stdDevs.set(j, stdDevs.get(j) + (((double) times[j]) - means.get(j)) * (((double) times[j]) - means.get(j)));
+				// Print statement for debugging
+				//System.out.print(stdDevsD.get(j) + " ");
+			}
+			//System.out.println();
+		}
+		
+		// if adding last element for this index, divide it by the total entries
+		for (int i = 0; i < numTimes; i++) {
+			stdDevs.set(i, Math.sqrt(stdDevs.get(i) / size));
+		}
+		
+		// Printing for debugging
+		/*
+		System.out.print("Standard deviations: ");
+		for (int i = 0; i < numTimes; i++ ) {
+			System.out.print(stdDevs.get(i) + " ");
+		}
+		System.out.println();
+		*/
+
+		return stdDevs;
+	}
+	
+	/**
+	 * Creates random denied data uniformly distributed within a given number
+	 * of standard deviations of a data set, then prints it to the file named above.
+	 * 
+	 * @param allKeystrokes
+	 * 	The dataset from which to create random denied data.
+	 * @param numDevs
+	 * 	The number of standard deviations to create random denied data within.
+	 */
+	private void createRandomDenied(ArrayList<int[]> allKeystrokes, int numDevs) {
+		// Test data for mean and standard deviation
+		// Mean: 6.5, Standard Deviation: 3.304...
+		/*
+		ArrayList<int[]> testSet = new ArrayList<int[]>();
+		int[] num1 = {9, 9};
+		testSet.add(num1);
+		int[] num2 = {2, 2};
+		testSet.add(num2);
+		int[] num3 = {5, 5};
+		testSet.add(num3);
+		int[] num4 = {4, 4};
+		testSet.add(num4);
+		int[] num5 = {12, 12};
+		testSet.add(num5);
+		int[] num6 = {7, 7};
+		testSet.add(num6);
+		findStdDeviationSets(testSet, findMeanSets(testSet));
+		 */
+		
+		ArrayList<Double> keystrokeAvgsD = findMeanSets(allKeystrokes);
+		ArrayList<Double> keystrokeStdDevsD = findStdDeviationSets(allKeystrokes, keystrokeAvgsD);
+		
+		/* Since times are milliseconds represented as integers,
+		 *convert averages and standard deviations to integers
+		 */
+		ArrayList<Integer> keystrokeAvgs = new ArrayList<Integer>();
+		ArrayList<Integer> keystrokeStdDevs = new ArrayList<Integer>();
+		int size = keystrokeAvgsD.size();
+		for (int i = 0; i < size; i++) {
+			keystrokeAvgs.add((int) Math.round(keystrokeAvgsD.get(i)));
+			keystrokeStdDevs.add((int) Math.round(keystrokeStdDevsD.get(i)));
+		}
+		
+		// Creates randomly denied data and prints it
+		Random rand = new Random();
+		// The number of denied entries to make and print
+		int deniedEntries = 50;
+		for (int i = 0; i < deniedEntries; i++) {
+			ArrayList<Integer> deniedNums = new ArrayList<Integer>();
+			for (int j = 0; j < size; j++) {
+				int stdDev = keystrokeStdDevs.get(j);
+				int mean = keystrokeAvgs.get(j);
+				int deniedRange = rand.nextInt(stdDev * (numDevs * 2) + 1);
+				deniedRange -= (stdDev * numDevs);
+				int deniedNum = mean + deniedRange;
+				deniedNums.add(deniedNum);
+			}
+			printDenied(deniedNums);
+		}
+		
+	}
+	
+	/**
+	 * Prints denied data to a text file.
+	 * Assumes the text file already has accepted data in it.
+	 * 
+	 * @param deniedData
+	 *	The denied data to be printed.
+	 *	Assumed to be in same format as accepted data already written to the file.
+	 */
+	private void printDenied(ArrayList<Integer> deniedData) {
+		// Set up to write to txt file
+		FileWriter write = null;
+		try {
+			write = new FileWriter(path, true);
+		} catch (IOException e) {
+			System.out.println("Error storing Data");
+		}
+		PrintWriter printer = new PrintWriter(write);
+		String txt = "";
+		
+		int size = deniedData.size();
+		printer.println();
+		for(int i = 0; i < size; i++){
+			txt += deniedData.get(i);
+			txt += ",";
+		}
+		txt += "denied";
+		printer.print(txt);
+		
+		printer.close();
 	}
 }
